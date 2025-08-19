@@ -1,0 +1,449 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.App {
+  min-height: 100vh;
+}
+
+/* Dark mode styles */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease;
+}
+
+/* Focus states for better accessibility */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #8b5cf6;
+}
+
+/* Button hover effects */
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Card hover effects */
+.bg-white:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Status badge styles */
+.status-completed {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-wip {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.status-delayed {
+  @apply bg-red-100 text-red-800;
+}
+
+.status-yet-to-start {
+  @apply bg-gray-100 text-gray-800;
+}
+
+/* Loading animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Table styles */
+table {
+  border-collapse: collapse;
+}
+
+tbody tr:hover {
+  background-color: rgba(139, 92, 246, 0.05);
+}
+
+.dark tbody tr:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+/* Form validation styles */
+.invalid {
+  @apply border-red-500 bg-red-50;
+}
+
+.dark .invalid {
+  @apply border-red-400 bg-red-900 bg-opacity-20;
+}
+
+.valid {
+  @apply border-green-500 bg-green-50;
+}
+
+.dark .valid {
+  @apply border-green-400 bg-green-900 bg-opacity-20;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .lg\:col-span-8 {
+    grid-column: span 12 / span 12;
+  }
+  
+  .lg\:col-span-3 {
+    grid-column: span 12 / span 12;
+  }
+  
+  .lg\:col-span-1 {
+    grid-column: span 12 / span 12;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+  }
+  
+  .shadow-lg {
+    box-shadow: none !important;
+  }
+}
+
+/* Custom utilities */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for success messages */
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.success-message {
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+/* Card stacking effect */
+.card-stack {
+  position: relative;
+}
+
+.card-stack::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  right: -2px;
+  height: 100%;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 1rem;
+  z-index: -1;
+}
+
+/* Professional button variants */
+.btn-primary {
+  @apply bg-purple-600 text-white hover:bg-purple-700;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 text-white hover:bg-gray-700;
+}
+
+.btn-success {
+  @apply bg-green-600 text-white hover:bg-green-700;
+}
+
+.btn-danger {
+  @apply bg-red-600 text-white hover:bg-red-700;
+}
+
+.btn-warning {
+  @apply bg-yellow-600 text-white hover:bg-yellow-700;
+}
+
+/* Enhanced form styling */
+.form-input {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200;
+}
+
+.dark .form-input {
+  @apply border-gray-600 bg-gray-700 text-white;
+}
+
+.form-select {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white transition-all duration-200;
+}
+
+.dark .form-select {
+  @apply border-gray-600 bg-gray-700 text-white;
+}
+
+.form-textarea {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y transition-all duration-200;
+}
+
+.dark .form-textarea {
+  @apply border-gray-600 bg-gray-700 text-white;
+}
+
+/* Status indicator dots */
+.status-dot {
+  @apply inline-block w-2 h-2 rounded-full mr-2;
+}
+
+.status-dot.completed {
+  @apply bg-green-500;
+}
+
+.status-dot.wip {
+  @apply bg-blue-500;
+}
+
+.status-dot.delayed {
+  @apply bg-red-500;
+}
+
+.status-dot.yet-to-start {
+  @apply bg-gray-500;
+}
+
+/* Page transition animations */
+.page-transition {
+  transition: all 0.5s ease-in-out;
+}
+
+/* Dark mode specific animations */
+.dark .bg-white {
+  background-color: #374151 !important;
+}
+
+.dark .text-gray-900 {
+  color: #f9fafb !important;
+}
+
+.dark .text-gray-700 {
+  color: #d1d5db !important;
+}
+
+.dark .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+.dark .border-gray-300 {
+  border-color: #6b7280 !important;
+}
+
+/* Theme toggle animation */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.theme-toggle:hover {
+  animation: bounce 0.6s;
+}
+
+/* Footer styles */
+.footer-link {
+  @apply text-purple-600 font-semibold hover:text-purple-700 transition-colors duration-200;
+}
+
+.dark .footer-link {
+  @apply text-purple-400 hover:text-purple-300;
+}
+
+/* Export button styles */
+.export-btn {
+  @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm transition-all duration-200;
+}
+
+.export-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* PDF table styles for better rendering */
+.pdf-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.pdf-table th,
+.pdf-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.pdf-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  .mobile-responsive {
+    padding: 1rem;
+  }
+  
+  .mobile-text {
+    font-size: 0.875rem;
+  }
+  
+  .mobile-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Accessibility improvements */
+.focus-visible:focus {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn-primary {
+    border: 2px solid currentColor;
+  }
+  
+  .form-input {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Hide any external branding */
+[class*="emergent"], 
+[class*="Emergent"],
+[class*="made-with"],
+[id*="emergent"],
+[id*="Emergent"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide any iframes or external content */
+iframe[src*="emergent"],
+iframe[src*="Emergent"] {
+  display: none !important;
+}
+
+/* Hide any watermarks or branding overlays */
+div[style*="position: fixed"],
+div[style*="position: absolute"][style*="bottom"],
+div[style*="position: absolute"][style*="top"] {
+  z-index: -1000 !important;
+}
+
+/* Ensure main content is always visible */
+.main-content {
+  z-index: 1000 !important;
+}
