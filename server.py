@@ -1164,6 +1164,17 @@ class SummaryReportGroup(BaseModel):
     tasks_by_status: Dict[str, List[SummaryTaskDetail]] = Field(default_factory=dict)
     reviewer: Optional[str] = None # This is Alimpan or Anant
 
+class QuickSummaryItem(BaseModel):
+    department: str
+    team: str
+    reported_count: int
+    total_employees: int
+
+class QuickSummaryResponse(BaseModel):
+    summary: List[QuickSummaryItem]
+    not_reported_employees: List[str]
+    not_reported_managers: List[str]
+
 # Security setup
 security = HTTPBearer()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -1991,6 +2002,70 @@ async def get_managers_list_data(current_user: UserResponse = Depends(get_curren
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Managers list service temporarily unavailable"
         )
+
+@api_router.get("/quick-summary", response_model=QuickSummaryResponse, name="Quick Attendance Summary")
+async def get_quick_summary(
+    current_user: UserResponse = Depends(get_current_user),
+    date: Optional[str] = Query(None)
+):
+    try:
+        if not date:
+            date = datetime.now(IST).strftime("%Y-%m-%d")
+
+        # 1. Get all reports for the given date to find who has reported
+        reports_cursor = db.work_reports.find({"date": date})
+        reports_on_date = await reports_cursor.to_list(length=None)
+        reported_emails = {report['employee_email'] for report in reports_on_date}
+
+        # 2. Iterate through DEPARTMENT_DATA to get all personnel and check their status
+        summary_items = []
+        not_reported_employees = []
+        not_reported_managers = []
+
+        for dept_name, teams in DEPARTMENT_DATA.items():
+            for team_name, members in teams.items():
+
+                team_employees = [m for m in members if m.get("Designation") == "Employee"]
+
+                reported_in_team_count = 0
+                for member in team_employees:
+                    member_email = member.get("Email ID")
+                    if member_email and member_email in reported_emails:
+                        reported_in_team_count += 1
+
+                summary_item = QuickSummaryItem(
+                    department=dept_name,
+                    team=team_name,
+                    reported_count=reported_in_team_count,
+                    total_employees=len(team_employees)
+                )
+                summary_items.append(summary_item)
+
+                # Check all members in the team for non-reporting status
+                for member in members:
+                    member_email = member.get("Email ID")
+                    member_name = member.get("Name")
+                    designation = member.get("Designation")
+
+                    if member_email and member_email not in reported_emails:
+                        if designation == "Employee":
+                            not_reported_employees.append(member_name)
+                        elif designation in ["Reporting manager", "Zonal Managers"]:
+                            not_reported_managers.append(member_name)
+
+        return QuickSummaryResponse(
+            summary=summary_items,
+            not_reported_employees=sorted(list(set(not_reported_employees))),
+            not_reported_managers=sorted(list(set(not_reported_managers)))
+        )
+
+    except Exception as e:
+        logging.error(f"Error in get_quick_summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate quick summary."
+        )
+
 
 @api_router.get("/summary-report-data", response_model=List[SummaryReportGroup], name="Hierarchical Summary Report")
 async def get_summary_report_data(

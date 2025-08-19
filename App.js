@@ -2332,6 +2332,28 @@ const SummaryReport = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [quickSummaryData, setQuickSummaryData] = useState(null);
+  const [quickSummaryLoading, setQuickSummaryLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchQuickSummary = async () => {
+      setQuickSummaryLoading(true);
+      try {
+        const dateToFetch = fromDate || new Date().toISOString().split('T')[0];
+        const response = await axios.get(`${API}/quick-summary?date=${dateToFetch}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setQuickSummaryData(response.data);
+      } catch (error) {
+        console.error('Error fetching quick summary data:', error);
+        setQuickSummaryData(null); // Clear data on error
+      } finally {
+        setQuickSummaryLoading(false);
+      }
+    };
+
+    fetchQuickSummary();
+  }, [fromDate, token]);
 
   useEffect(() => {
     fetchDepartments();
@@ -2609,6 +2631,77 @@ const SummaryReport = () => {
           📄 Export PDF
         </motion.button>
       </div>
+
+      {/* Quick Summary Section */}
+      <div className="my-8">
+        <h3 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+          Quick Summary for {fromDate || new Date().toISOString().split('T')[0]}
+        </h3>
+        {quickSummaryLoading ? (
+          <div className="text-center py-8">
+            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Loading Quick Summary...</p>
+          </div>
+        ) : quickSummaryData ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Quick Summary Table */}
+            <div className="md:col-span-2">
+              <div className="overflow-x-auto shadow rounded-lg">
+                <table className={`min-w-full divide-y ${isDark ? 'divide-gray-700' : 'divide-gray-200'}`}>
+                  <thead className={isDark ? 'bg-gray-700' : 'bg-gray-50'}>
+                    <tr>
+                      <th className={`px-4 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Department</th>
+                      <th className={`px-4 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Team</th>
+                      <th className={`px-4 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Reported / Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className={`${isDark ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'}`}>
+                    {quickSummaryData.summary.map((item, index) => (
+                      <tr key={index} className={index % 2 === 0 ? (isDark ? 'bg-gray-750' : 'bg-gray-50') : ''}>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">{item.department}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">{item.team}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">{item.reported_count} / {item.total_employees}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Not Reported Lists */}
+            <div>
+              <div className={`${isDark ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-lg mb-4 shadow`}>
+                <h4 className="font-semibold mb-2">Managers Not Reported</h4>
+                {quickSummaryData.not_reported_managers.length > 0 ? (
+                  <ul className="list-disc list-inside text-sm space-y-1">
+                    {quickSummaryData.not_reported_managers.map((name, index) => (
+                      <li key={index}>{name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>All managers have reported.</p>
+                )}
+              </div>
+              <div className={`${isDark ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-lg shadow`}>
+                <h4 className="font-semibold mb-2">Employees Not Reported</h4>
+                {quickSummaryData.not_reported_employees.length > 0 ? (
+                  <ul className="list-disc list-inside text-sm space-y-1">
+                    {quickSummaryData.not_reported_employees.map((name, index) => (
+                      <li key={index}>{name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>All employees have reported.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Could not load quick summary.</p>
+          </div>
+        )}
+      </div>
+
 
       {/* Reports Display */}
       {loading ? (
